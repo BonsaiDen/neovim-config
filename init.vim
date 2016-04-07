@@ -16,6 +16,8 @@ Plug 'airblade/vim-gitgutter' " git status signs
 Plug 'benekastah/neomake' " Async makeprg
 Plug 'milkypostman/vim-togglelist' " Toggle Quickfix and Locationlist
 Plug 'jiangmiao/auto-pairs' " auto close pairs
+Plug 'racer-rust/vim-racer' " Rust autocompletion
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' } " JavaScript autocompletion
 
 " Syntax Plugins
 Plug 'tpope/vim-markdown'
@@ -52,11 +54,12 @@ let g:ctrlp_custom_ignore = {
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 1
 
+let g:deoplete#sources = {}
+let g:deoplete#sources.rs = ['racer']
+
 " Use Supertab
 let g:SuperTabDefaultCompletionType = "<c-n>"
 let g:SuperTabCrMapping = 1
-"let g:SuperTabMappingForward = '<S-tab>'
-"let g:SuperTabMappingBackward = '<tab>'
 
 " Airline
 let g:airline_theme = "durant"
@@ -66,11 +69,6 @@ let g:toggle_list_no_mappings = "true"
 
 " Git Gutter
 let g:gitgutter_sign_column_always = 1
-"let g:gitgutter_sign_added = "++"
-"let g:gitgutter_sign_modified = "~~"
-"let g:gitgutter_sign_removed = "--"
-"let g:gitgutter_sign_removed_first_line = "^^"
-"let g:gitgutter_sign_modified_removed = "mr"
 
 " Setup Airline to use Powerline fonts
 let g:airline_powerline_fonts = 1
@@ -86,6 +84,10 @@ let g:neomake_error_sign = {
   \ 'text': 'E',
   \ 'texthl': 'ErrorMsg',
   \ }
+
+" Racer Setup
+let g:racer_cmd = "racer"
+
 " General Configuration -------------------------------------------------------
 " -----------------------------------------------------------------------------
 
@@ -306,5 +308,17 @@ nmap <Leader>m :make<CR>
 " -----------------------------------------------------------------------------
 autocmd Filetype jade setlocal ts=2 sw=2 expandtab
 autocmd Filetype yaml setlocal ts=2 sw=2 expandtab
-"autocmd! BufWritePost *.rs NeomakeProject cargo
+
+
+" Layout ----------------------------------------------------------------------
+" -----------------------------------------------------------------------------
+function! s:onStart()
+    :NERDTree
+    wincmd p
+    wincmd v
+endfunction
+
+function! g:Setup()
+    autocmd VimEnter * call s:onStart()
+endfunction
 
