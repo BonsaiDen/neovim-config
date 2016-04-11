@@ -36,7 +36,7 @@ call plug#end()
 let g:ackprg = 'ack -s -H --nogroup --nocolor --column' " Ack
 
 " Nerd Tree
-let NERDTreeIgnore = ['\.pyc$', '\.h\.gch$', '\.o$', '^node_modules$', '^bower_components$']
+let NERDTreeIgnore = ['\.pyc$', '\.h\.gch$', '\.o$', '^node_modules$', '^bower_components$', '^Cargo.lock$', '^target$']
 let NERDTreeShowBookmarks=1
 let NERDTreeShowBookmarks=1
 let g:clipbrdDefaultReg=1
@@ -46,7 +46,7 @@ set wildignore+=*.o,*.obj " ignore these filetypes
 let g:ctrlp_max_depth = 20
 let g:ctrlp_max_files = 10000
 let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\.git$\|\.hg$\|public$\|build$\|node_modules$\|\.svn$|\.src$|__pycache__$',
+    \ 'dir':  '\.git$\|\.hg$\|public$\|build$\|node_modules$\|\.svn$|\.src$\|__pycache__$\|target$',
     \ 'file': '\.git.*\|\.exe$\|\.so$\|\.o$\|\.ghc$',
     \ }
 
@@ -110,12 +110,10 @@ let g:clipbrdDefaultReg = '+'
 
 " Smart tabbing / autoindenting
 set undolevels=1000 " More undo history please
-set autoindent " Apply auto indenting if avaialble
 set virtualedit=all " Allow to edit in-place anywhere, even on blank lines
 set nostartofline " During movement, try to stay on the same column even on empty lines
 
 " UI
-set laststatus=2 " Statusline setup
 set scrolloff=4 " Keep 4 lines top/bottom when scrolling
 set hidden " ingore background buffers with changes
 set fillchars="" " Don't show fill characters in V-split separators
@@ -131,9 +129,7 @@ set nowb
 set noswapfile
 
 " Characters / Tabs / Spaces / Indentation
-"set enc=utf-8 " Default encoding is UTF-8
 set listchars=tab:▸\ ,eol:¬ " Show tab and eol chars
-set smarttab " activate smarttabs
 set shiftwidth=4 " when auto-indenting, indent by this much
 set tabstop=4 " expand tabs to 4 spaces
 set expandtab " turn tabkeypresses into spaces
@@ -143,14 +139,11 @@ set nowrap " No automatic wrapping
 set equalalways " Automatically resize split windows to have the same aspect
 set mouse=n " Allow mouse ONLY in normal mode (since you can scroll any window on gnome without focussing it)
 set cc=80 " Yes. I like it that way.
-set backspace=eol,start,indent " Make backspace jump over all charaters, can also be done via "set backspace=2"
 
 " Search and Highlighting
 set wrapscan " Automatically search from the top if nothing is found
 set magic
 set showmatch " Show matches
-set hlsearch " Highlight search
-set incsearch " Apply search pattern on each keystroke
 set ignorecase  " Ignore casing by default
 set smartcase " Require casing in case any upper case character is in the pattern
 
@@ -162,10 +155,6 @@ set foldlevel=1 "this is just what i use
 
 " All other options
 set lazyredraw " Don't redraw while in macros
-
-" Command line completion options
-set wildmenu " Enable auto complete
-"set wildmode=list:longest,full "show all, select longest first
 
 " Spelling dict file
 set spellfile=~/.config/nvim/dict.add
