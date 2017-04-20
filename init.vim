@@ -10,14 +10,26 @@ Plug 'kien/ctrlp.vim' "Fuzzy Browsing
 Plug 'mileszs/ack.vim' "Ack Integration
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } " Load NerdTree on Demand
 Plug 'tpope/vim-fugitive' " Git support for airline
-Plug 'Shougo/deoplete.nvim' " Autocomplete
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " Autocomplete
 Plug 'ervandew/supertab' " tab based autocomplete
 Plug 'airblade/vim-gitgutter' " git status signs
 Plug 'benekastah/neomake' " Async makeprg
 Plug 'milkypostman/vim-togglelist' " Toggle Quickfix and Locationlist
 Plug 'jiangmiao/auto-pairs' " auto close pairs
-Plug 'racer-rust/vim-racer' " Rust autocompletion
-Plug 'ternjs/tern_for_vim', { 'do': 'npm install' } " JavaScript autocompletion
+"Plug 'racer-rust/vim-racer' " Rust autocompletion
+"Plug 'ternjs/tern_for_vim', { 'do': 'npm install' } " JavaScript autocompletion
+"Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'racer-rust/vim-racer'
+Plug 'roxma/nvim-cm-racer'
+"Plug 'vim-scripts/Conque-GDB'
+"Plug 'elixir-lang/vim-elixir'
+
+" tmux navigation integration
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
+Plug 'jtdowney/vimux-cargo'
 
 " Syntax Plugins
 Plug 'tpope/vim-markdown'
@@ -35,6 +47,7 @@ call plug#end()
 " -----------------------------------------------------------------------------
 let g:ackprg = 'ack -s -H --nogroup --nocolor --column' " Ack
 
+set grepprg=rg\ --vimgrep
 " Nerd Tree
 let NERDTreeIgnore = ['\.pyc$', '\.h\.gch$', '\.o$', '^node_modules$', '^bower_components$', '^Cargo.lock$', '^target$']
 let NERDTreeShowBookmarks=1
@@ -193,6 +206,7 @@ vnoremap <silent> <S-j> 3j
 nnoremap <silent> + <nop>
 command! W w
 command! E e
+command! Qall qall
 
 " Quicker selects
 nmap Ü viB
@@ -202,6 +216,7 @@ nmap Ä vi]
 imap ö [
 imap ä {
 inoremap Ö -><ESC>a
+inoremap Ü =><ESC>a
 
 inoremap <C-X><C-F> <C-O>:lcd %:p:h<CR><C-X><C-F>
 
@@ -251,6 +266,8 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 autocmd BufWritePre *.js :call <SID>StripTrailingWhitespaces()
 autocmd BufWritePre *.py :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.rs :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.s :call <SID>StripTrailingWhitespaces()
 
 " Leader key stuff
 let mapleader = ","
@@ -258,6 +275,14 @@ let mapleader = ","
 " ,f ,w etc
 "let g:EasyMotion_leader_key = '<Leader>'
 map <Leader> <Plug>(easymotion-prefix)
+
+" vimux
+map <Leader>, :VimuxPromptCommand<CR>
+map <Leader>l :VimuxRunLastCommand<CR>
+
+" Cargo Integration
+map <Leader>rf :wa<CR> :CargoUnitTestCurrentFile<CR>
+map <Leader>rl :wa<CR> :CargoUnitTestFocused<CR>
 
 " Close buffer fully
 nmap <silent> <Leader>bd :bd!<CR>
@@ -274,6 +299,15 @@ vmap <silent> <Leader>J :join<CR>
 " DevDocs
 nmap Z <Plug>(devdocs-under-cursor)
 
+" RLS
+" -------------------------------------------------------------------------
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['/home/ivo/.cargo/bin/rls'],
+    \ }
+
+nnoremap <silent> gk :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+nnoremap <silent> gr :call LanguageClient_textDocument_rename()<CR>
 
 " Macros ----------------------------------------------------------------------
 " -----------------------------------------------------------------------------
@@ -287,10 +321,15 @@ fun! RunNoirTestLine()
     execute "! grunt env:mock noir:mock:".expand('%:p').":".line(".")
 endfun
 
-nmap <silent> <Leader>i :call InfoJS()<CR>
-nmap <silent> <Leader>rf :call RunNoirTestFile()<CR>
-nmap <silent> <Leader>rl :call RunNoirTestLine()<CR>
-nmap <Leader>m :make<CR>
+fun! GBASMTrace()
+    execute "! ~/dev/gbasm/bin/gbasm -O -d --silent --analyze-registers ".expand('%:p').":".(line2byte(line(".")) + col(".")).' src/main.gb.s'
+endfun
+
+"nmap <silent> <Leader>i :call InfoJS()<CR>
+"nmap <silent> <Leader>rf :call RunNoirTestFile()<CR>
+"nmap <silent> <Leader>rl :call RunNoirTestLine()<CR>
+"nmap <silent> <Leader>t :call GBASMTrace()<CR>
+"nmap <Leader>m :make<CR>
 
 
 " Filetype related settings ---------------------------------------------------
@@ -298,6 +337,7 @@ nmap <Leader>m :make<CR>
 autocmd Filetype jade setlocal ts=2 sw=2 expandtab
 autocmd Filetype yaml setlocal ts=2 sw=2 expandtab
 
+command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
 
 " Layout ----------------------------------------------------------------------
 " -----------------------------------------------------------------------------
@@ -310,4 +350,7 @@ endfunction
 function! g:Setup()
     autocmd VimEnter * call s:onStart()
 endfunction
+
+" Fix for #5990
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 0
 

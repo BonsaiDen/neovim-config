@@ -8,6 +8,7 @@ syn keyword gb_instruction  adc add and bit ccf cp cpl daa dec di ei ex halt inc
 syn keyword gb_register     a b c d e h l af bc de hl sp hld hli 
 syn keyword gb_branch       jr jp call
 syn keyword gb_return       ret 
+syn keyword gb_debug        msg brk 
 
 syn match gb_label          "^[a-z_][a-z0-9_]*:"he=e-1
 syn match gb_localLabel     "^\.[a-z_][a-z0-9_]*:"he=e-1
@@ -40,6 +41,7 @@ if !exists("gbasm_syntax_init")
     hi link gb_instruction Statement
     hi link gb_branch      Statement
     hi link gb_return      Function
+    hi link gb_debug       Todo
     hi link gb_register    Identifier
     hi link gb_todos       Todo
     hi link gb_macroArg    Identifier

@@ -50,8 +50,8 @@ highlight Folded ctermfg=236 ctermbg=248 guifg=#333333 guibg=DarkGrey
 highlight FoldColumn ctermfg=236 ctermbg=250 guifg=#333333 guibg=Grey
 
 " Popup Menu Menu
-highlight Pmenu ctermbg=25  guibg=Magenta
-highlight PmenuSel ctermbg=19  guibg=DarkGrey
+highlight Pmenu ctermbg=25 ctermfg=15 guibg=Magenta
+highlight PmenuSel ctermbg=19 ctermfg=11 guibg=DarkGrey
 highlight PmenuSbar ctermbg=250 guibg=Grey
 highlight PmenuThumb cterm=reverse gui=reverse
 
